@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>2-Minute Snake Game</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            touch-action: none; /* Prevents screen scrolling on touch */
+        }
+
+        body {
+            background-color: #1a1a2e;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            width: 90vw;
+            max-width: 400px;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: #16213e;
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .point-legend {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .dot-info {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .dot-sample {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        canvas {
+            background-color: #0f3460;
+            border: 4px solid #16213e;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            max-width: 90vw;
+            max-height: 90vw;
+        }
+
+        /* Game Over Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .game-over-title {
+            font-size: 2.5rem;
+            color: #e94560;
+            margin-bottom: 10px;
+        }
+
+        .final-score {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .restart-btn {
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            background-color: #e94560;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div>Score: <span id="score">0</span></div>
+        <div>Time: <span id="timer">02:00</span></div>
+    </div>
+
+    <div class="point-legend">
+        <div class="dot-info">
+            <div class="dot-sample" style="background-color: #ff4d4d;"></div> Red (5 Pts)
+        </div>
+        <div class="dot-info">
+            <div class="dot-sample" style="background-color: #4d94ff;"></div> Blue (7 Pts)
+        </div>
+        <div class="dot-info">
+            <div class="dot-sample" style="background-color: #4dff88;"></div> Green (10 Pts)
+        </div>
+    </div>
+
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+    <div class="overlay" id="overlay">
+        <div class="game-over-title">Time's Up!</div>
+        <div class="final-score">Your Score: <span id="finalScore">0</span></div>
+        <button class="restart-btn" onclick="startGame()">Play Again</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        const scoreEl = document.getElementById("score");
+        const timerEl = document.getElementById("timer");
+        const overlay = document.getElementById("overlay");
+        const finalScoreEl = document.getElementById("finalScore");
+
+        const gridSize = 20;
+        const tileCount = canvas.width / gridSize;
+
+        let snake = [];
+        let dx = gridSize;
+        let dy = 0;
+
+        let dots = [];
+        let score = 0;
+        let timeRemaining = 120;
+
+        let gameInterval;
+        let timerInterval;
+        let spawnInterval;
+
+        const dotTypes = [
+            { color: '#ff4d4d', points: 5 },
+            { color: '#4d94ff', points: 7 },
+            { color: '#4dff88', points: 10 }
+        ];
+
+        // Keyboard Controls
+        window.addEventListener("keydown", changeDirection);
+
+        // Mobile Touch (Swipe) Controls
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        window.addEventListener('touchstart', function(e) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }, false);
+
+        window.addEventListener('touchend', function(e) {
+            if (!touchStartX || !touchStartY) return;
+
+            let touchEndX = e.changedTouches[0].clientX;
+            let touchEndY = e.changedTouches[0].clientY;
+
+            let diffX = touchEndX - touchStartX;
+            let diffY = touchEndY - touchStartY;
+
+            // Sensitivity threshold to avoid small accidental touches
+            if (Math.abs(diffX) > 20 || Math.abs(diffY) > 20) {
+                if (Math.abs(diffX) > Math.abs(diffY)) {
+                    // Horizontal swipe
+                    if (diffX > 0 && dx === 0) {
+                        dx = gridSize; dy = 0; // Right
+                    } else if (diffX < 0 && dx === 0) {
+                        dx = -gridSize; dy = 0; // Left
+                    }
+                } else {
+                    // Vertical swipe
+                    if (diffY > 0 && dy === 0) {
+                        dx = 0; dy = gridSize; // Down
+                    } else if (diffY < 0 && dy === 0) {
+                        dx = 0; dy = -gridSize; // Up
+                    }
+                }
+            }
+
+            touchStartX = 0;
+            touchStartY = 0;
+        }, false);
+
+        function changeDirection(e) {
+            const keyPressed = e.keyCode;
+            const LEFT = 37, UP = 38, RIGHT = 39, DOWN = 40;
+            const W = 87, A = 65, S = 83, D = 68;
+
+            if ((keyPressed === LEFT || keyPressed === A) && dx === 0) {
+                dx = -gridSize; dy = 0;
+            } else if ((keyPressed === UP || keyPressed === W) && dy === 0) {
+                dx = 0; dy = -gridSize;
+            } else if ((keyPressed === RIGHT || keyPressed === D) && dx === 0) {
+                dx = gridSize; dy = 0;
+            } else if ((keyPressed === DOWN || keyPressed === S) && dy === 0) {
+                dx = 0; dy = gridSize;
+            }
+        }
+
+        function startGame() {
+            snake = [
+                { x: 10 * gridSize, y: 10 * gridSize },
+                { x: 9 * gridSize, y: 10 * gridSize }
+            ];
+            dx = gridSize;
+            dy = 0;
+            score = 0;
+            timeRemaining = 120;
+            dots = [];
+            scoreEl.innerText = score;
+            overlay.classList.remove("show");
+
+            spawnDot();
+
+            clearInterval(gameInterval);
+            clearInterval(timerInterval);
+            clearInterval(spawnInterval);
+
+            gameInterval = setInterval(gameLoop, 100);
+            timerInterval = setInterval(updateTimer, 1000);
+            spawnInterval = setInterval(spawnDot, 1000);
+        }
+
+        function gameLoop() {
+            moveSnake();
+            checkEat();
+            draw();
+        }
+
+        function moveSnake() {
+            let headX = snake[0].x + dx;
+            let headY = snake[0].y + dy;
+
+            if (headX < 0) headX = canvas.width - gridSize;
+            else if (headX >= canvas.width) headX = 0;
+
+            if (headY < 0) headY = canvas.height - gridSize;
+            else if (headY >= canvas.height) headY = 0;
+
+            const newHead = { x: headX, y: headY };
+            snake.unshift(newHead);
+            snake.pop();
+        }
+
+        function spawnDot() {
+            const randomX = Math.floor(Math.random() * tileCount) * gridSize;
+            const randomY = Math.floor(Math.random() * tileCount) * gridSize;
+            const randomType = dotTypes[Math.floor(Math.random() * dotTypes.length)];
+
+            dots.push({
+                x: randomX,
+                y: randomY,
+                color: randomType.color,
+                points: randomType.points
+            });
+        }
+
+        function checkEat() {
+            const head = snake[0];
+
+            for (let i = 0; i < dots.length; i++) {
+                if (head.x === dots[i].x && head.y === dots[i].y) {
+                    score += dots[i].points;
+                    scoreEl.innerText = score;
+                    snake.push({ ...snake[snake.length - 1] });
+                    dots.splice(i, 1);
+                    break;
+                }
+            }
+        }
+
+        function draw() {
+            ctx.fillStyle = "#0f3460";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            dots.forEach(dot => {
+                ctx.fillStyle = dot.color;
+                ctx.beginPath();
+                ctx.arc(dot.x + gridSize / 2, dot.y + gridSize / 2, gridSize / 2 - 2, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            snake.forEach((part, index) => {
+                ctx.fillStyle = index === 0 ? "#00fff5" : "#00b894";
+                ctx.fillRect(part.x, part.y, gridSize - 1, gridSize - 1);
+            });
+        }
+
+        function updateTimer() {
+            timeRemaining--;
+
+            let minutes = Math.floor(timeRemaining / 60);
+            let seconds = timeRemaining % 60;
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            timerEl.innerText = `${minutes}:${seconds}`;
+
+            if (timeRemaining <= 0) {
+                endGame();
+            }
+        }
+
+        function endGame() {
+            clearInterval(gameInterval);
+            clearInterval(timerInterval);
+            clearInterval(spawnInterval);
+
+            finalScoreEl.innerText = score;
+            overlay.classList.add("show");
+        }
+
+        startGame();
+    </script>
+</body>
+</html>

@@ -1,12 +1,14 @@
-// Supabase Configuration (Corrected URL)
+// Supabase Configuration
 const SUPABASE_URL = "https://yhzwkewubrlgmezxpcr.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_sXOS0sc3hoddprV518CkSA_ksknzBqK";
 
-// Initialize Supabase Client
-const supabase = (window.supabase && typeof window.supabase.createClient === 'function')
+// Initialize Supabase Client (without const redeclaration conflict)
+window.sbClient = (window.supabase && typeof window.supabase.createClient === 'function')
     ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
     : null;
 
+// Re-assign to global supabase variable safely
+supabase = window.sbClient;
 // Dynamic Room ID Query Setup (URL query e.g., ?room=arcade99)
 const urlParams = new URLSearchParams(window.location.search);
 let currentRoomId = urlParams.get('room') || 'default-hub';

@@ -4,96 +4,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GuildPlay - Multiplayer Arcade</title>
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'><path d='M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4-3c-.83 0-1.5-.67-1.5-1.5S18.67 9 19.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z'/></svg>">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Custom CSS Link (Only Once) -->
     <link rel="stylesheet" href="style.css">
-    <!-- Canvas Confetti Library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="theme-cyberpunk">
 
-    <!-- Landscape Lock / Rotate Device Overlay for Mobile -->
     <div id="orientation-overlay">
-        <i class="fa-solid fa-mobile-screen-button rotate-icon"></i>
-        <h3>Please Rotate Your Device</h3>
+        <i class="fa-solid fa-mobile-screen-button rotate-phone-icon"></i>
+        <h2>Please Rotate Your Device</h2>
         <p>GuildPlay is designed to run exclusively in Landscape Mode.</p>
     </div>
 
-    <!-- Header -->
-    <header class="arcade-header" id="arcade-header">
-        <div class="header-left">
-            <div class="brand-logo">
-                <i class="fa-solid fa-gamepad brand-icon"></i>
-                <span class="brand-name">GuildPlay</span>
+    <!-- ARCADE HEADER -->
+    <header class="arcade-header">
+        <div class="logo-area">
+            <i class="fa-solid fa-gamepad"></i>
+            <div>
+                <span>GuildPlay</span>
+                <span class="logo-sub">Play &bull; Chat &bull; Connect</span>
             </div>
-            <div class="brand-subtext">PLAY &bull; CHAT &bull; CONNECT</div>
         </div>
 
-        <nav class="header-nav">
-            <button class="nav-tab active" id="tab-home" onclick="switchMainTab('home')">
-                <i class="fa-solid fa-house"></i>
-                <span>Home</span>
+        <div class="nav-tabs">
+            <button class="tab-btn active" id="tab-home" onclick="switchMainTab('home')">
+                <i class="fa-solid fa-house"></i> Home
             </button>
-            <button class="nav-tab" id="tab-friends" onclick="switchMainTab('friends')">
-                <i class="fa-solid fa-user-group"></i>
-                <span>Friends</span>
+            <button class="tab-btn" id="tab-friends" onclick="switchMainTab('friends')">
+                <i class="fa-solid fa-user-group"></i> Friends
             </button>
-            <button class="nav-tab" id="tab-leaderboard" onclick="switchMainTab('leaderboard')">
-                <i class="fa-solid fa-trophy"></i>
-                <span>Leaderboard</span>
+            <button class="tab-btn" id="tab-leaderboard" onclick="switchMainTab('leaderboard')">
+                <i class="fa-solid fa-trophy"></i> Leaderboard
             </button>
-        </nav>
+        </div>
 
         <div class="header-right">
             <!-- Header Invite Button -->
-            <button class="header-icon-btn" id="btn-header-invite" title="Invite Friends" onclick="openInviteModal()">
+            <button class="icon-btn" id="btn-header-invite" title="Invite Friends" onclick="openDrawer('invite-drawer')">
                 <i class="fa-solid fa-user-plus"></i>
             </button>
 
-            <!-- Notifications Button -->
-            <button class="header-icon-btn" id="btn-header-notif" title="Notifications">
+            <!-- Notification Button -->
+            <button class="icon-btn" id="btn-header-notif" title="Notifications">
                 <i class="fa-solid fa-bell"></i>
-                <span class="notif-badge" id="notif-badge" style="display: none;">0</span>
+                <span class="badge" id="notif-badge" style="display: none;">0</span>
             </button>
 
-            <!-- Audio Settings Button -->
-            <button class="header-icon-btn" id="btn-header-settings" title="Audio Settings">
+            <!-- Settings Button -->
+            <button class="icon-btn" id="btn-header-settings" title="Settings">
                 <i class="fa-solid fa-gear"></i>
             </button>
 
-            <!-- User Profile Chip -->
-            <div class="user-profile-chip" id="btn-header-profile" title="My Profile">
-                <div class="user-avatar-wrap">
-                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Guest" alt="User Avatar" class="user-avatar" id="header-avatar-img">
-                    <span class="online-dot"></span>
+            <!-- Profile Trigger -->
+            <div class="profile-trigger" id="btn-header-profile" title="Profile">
+                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Guest" alt="Avatar" id="header-avatar-img">
+                <div class="p-info">
+                    <span class="p-name" id="header-username">Guest</span>
                 </div>
-                <span class="user-handle" id="header-username">Guest</span>
             </div>
         </div>
     </header>
 
-    <!-- Global App Backdrop (No Blur) -->
-    <div class="drawer-backdrop" id="drawer-backdrop"></div>
+    <!-- BACKDROP (NO BLUR) -->
+    <div class="modal-backdrop" id="drawer-backdrop"></div>
 
     <!-- NOTIFICATION DRAWER -->
     <div class="side-drawer" id="notif-drawer">
         <div class="drawer-header">
-            <h3><i class="fa-solid fa-bell"></i> Notifications</h3>
-            <button class="drawer-close" id="close-notif-drawer"><i class="fa-solid fa-xmark"></i></button>
+            <span><i class="fa-solid fa-bell"></i> Notifications</span>
+            <button class="drawer-close"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <div class="drawer-body">
-            <div class="notif-list" id="notif-list">
-                <div class="notif-empty" style="text-align: center; color: var(--text-muted); padding: 2rem 1rem;">
-                    <i class="fa-regular fa-bell-slash" style="font-size: 2rem; margin-bottom: 0.5rem; display: block;"></i>
-                    No new notifications
-                </div>
+        <div class="notif-list" id="notif-list">
+            <div style="text-align: center; color: var(--text-muted); padding: 25px 10px; font-size: 0.85rem;">
+                <i class="fa-regular fa-bell-slash" style="font-size: 1.8rem; margin-bottom: 8px; display: block;"></i>
+                No new notifications
             </div>
         </div>
     </div>
@@ -101,30 +86,21 @@
     <!-- SETTINGS DRAWER -->
     <div class="side-drawer" id="settings-drawer">
         <div class="drawer-header">
-            <h3><i class="fa-solid fa-gear"></i> Settings</h3>
-            <button class="drawer-close" id="close-settings-drawer"><i class="fa-solid fa-xmark"></i></button>
+            <span><i class="fa-solid fa-gear"></i> Settings</span>
+            <button class="drawer-close"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <div class="drawer-body">
-            <div class="settings-group">
-                <h4>Audio</h4>
-                <div class="setting-item">
-                    <span>Sound Effects</span>
-                    <label class="switch">
-                        <input type="checkbox" id="sfx-toggle" checked>
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <div class="setting-item">
-                    <span>Background Music</span>
-                    <label class="switch">
-                        <input type="checkbox" id="theme-music-toggle">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <div class="setting-item">
-                    <span>Music Volume</span>
-                    <input type="range" min="0" max="100" value="40" class="range-slider" id="music-vol-slider">
-                </div>
+        <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px;">
+            <div class="setting-row">
+                <span>Sound Effects</span>
+                <input type="checkbox" id="sfx-toggle" checked>
+            </div>
+            <div class="setting-row">
+                <span>Background Music</span>
+                <input type="checkbox" id="theme-music-toggle">
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+                <span style="font-size: 0.85rem; color: var(--text-muted);">Music Volume</span>
+                <input type="range" min="0" max="100" value="40" class="volume-slider" id="music-vol-slider">
             </div>
         </div>
     </div>
@@ -132,243 +108,213 @@
     <!-- PROFILE DRAWER -->
     <div class="side-drawer" id="profile-drawer">
         <div class="drawer-header">
-            <h3><i class="fa-solid fa-user"></i> Player Profile</h3>
-            <button class="drawer-close" id="close-profile-drawer"><i class="fa-solid fa-xmark"></i></button>
+            <span><i class="fa-solid fa-user"></i> Player Profile</span>
+            <button class="drawer-close"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <div class="drawer-body">
-            <div class="profile-preview">
-                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Guest" id="profile-avatar-large" alt="Large Avatar">
-                <h4 id="profile-display-name">Guest</h4>
-                <span class="uid-tag" id="profile-uid-display">GP-000000</span>
-                <span id="profile-account-badge" style="font-size: 0.75rem; color: var(--warning, #f59e0b); display: block; margin-top: 4px;">Guest Account (Local)</span>
-            </div>
-
-            <div class="input-form-group">
-                <label>Username</label>
-                <input type="text" id="profile-username-input" placeholder="Enter username...">
-            </div>
-
-            <div class="input-form-group" style="margin-top: 1rem;">
-                <label>Email (Register to Chat & Add Friends)</label>
-                <input type="email" id="profile-email-input" placeholder="player@example.com">
-                <small id="email-help-text" style="color: var(--text-muted); font-size: 0.7rem; display: block; margin-top: 4px;">Once registered, this email becomes permanent.</small>
-            </div>
-
-            <div class="input-form-group" style="margin-top: 1rem;">
-                <label>Choose Avatar</label>
-                <div class="avatar-selection-grid" id="avatar-selection-grid"></div>
-            </div>
-
-            <button class="btn-primary" id="save-profile-btn" style="width: 100%; margin-top: 1.5rem;">Save & Register</button>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 10px;">
+            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Guest" id="profile-avatar-large" style="width: 70px; height: 70px; border-radius: 50%; border: 2px solid var(--neon-blue);">
+            <h4 id="profile-display-name" style="color: var(--text-main);">Guest</h4>
+            <span id="profile-uid-display" style="font-size: 0.75rem; color: var(--text-muted); background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 10px;">GP-000000</span>
+            <span id="profile-account-badge" style="font-size: 0.7rem; color: var(--neon-gold);">Guest Account (Local)</span>
         </div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 15px;">
+            <label style="font-size: 0.75rem; color: var(--text-muted);">Username</label>
+            <input type="text" id="profile-username-input" style="width: 100%; padding: 6px 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); border-radius: 6px; color: white;">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
+            <label style="font-size: 0.75rem; color: var(--text-muted);">Email (Register to Chat & Friends)</label>
+            <input type="email" id="profile-email-input" placeholder="player@example.com" style="width: 100%; padding: 6px 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); border-radius: 6px; color: white; font-size: 14px;">
+            <small style="font-size: 0.65rem; color: var(--text-muted);">Permanent once registered.</small>
+        </div>
+
+        <div style="margin-top: 12px;">
+            <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 6px;">Choose Avatar</label>
+            <div class="avatar-grid" id="avatar-selection-grid"></div>
+        </div>
+
+        <button class="modal-btn-save" id="save-profile-btn" style="margin-top: 15px; width: 100%;">Save & Register</button>
     </div>
 
     <!-- INVITE DRAWER -->
     <div class="side-drawer" id="invite-drawer">
         <div class="drawer-header">
-            <h3><i class="fa-solid fa-share-nodes"></i> Invite to Room</h3>
-            <button class="drawer-close" id="close-invite-drawer"><i class="fa-solid fa-xmark"></i></button>
+            <span><i class="fa-solid fa-share-nodes"></i> Invite to Room</span>
+            <button class="drawer-close"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <div class="drawer-body">
-            <div class="invite-link-box">
-                <label>Room URL</label>
-                <div class="copy-input-group">
-                    <input type="text" id="room-invite-link" readonly value="">
-                    <button class="btn-primary" id="copy-invite-btn"><i class="fa-regular fa-copy"></i> Copy</button>
-                </div>
-            </div>
-            <div style="margin-top: 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
-                Share this unique link with friends to play and chat together in this room.
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+            <label style="font-size: 0.75rem; color: var(--text-muted);">Share Room Link</label>
+            <div style="display: flex; gap: 6px;">
+                <input type="text" id="room-invite-link" readonly style="flex:1; padding: 6px 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); border-radius: 6px; color: white;">
+                <button class="find-btn" id="copy-invite-btn"><i class="fa-regular fa-copy"></i> Copy</button>
             </div>
         </div>
     </div>
 
     <!-- MAIN APP CONTAINER -->
     <main class="arcade-main-container" id="main-container">
-        <!-- LEFT: Group & Voice Box -->
-        <section class="side-box group-box" id="group-box">
-            <div class="box-header">
-                <div class="title-with-badge">
-                    <span class="box-title">Room</span>
-                    <span class="badge" id="party-count-badge">1</span>
-                </div>
-                <div class="voice-controls">
-                    <button class="icon-toggle-btn" id="voice-mute-toggle" title="Toggle Mic">
+        <!-- SIDEBAR (Room & Chat) -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span>Room (<span id="party-count-badge">1</span>)</span>
+                <div style="display: flex; gap: 6px;">
+                    <button class="control-icon-btn" id="voice-mute-toggle" title="Toggle Mic">
                         <i class="fa-solid fa-microphone-slash"></i>
                     </button>
-                    <button class="icon-toggle-btn" id="audio-deafen-toggle" title="Toggle Sound">
+                    <button class="control-icon-btn" id="audio-deafen-toggle" title="Toggle Audio">
                         <i class="fa-solid fa-volume-high"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- Members List: Dynamic Only -->
-            <div class="group-members-list" id="group-members-list">
-                <div class="member-item self-item" id="member-self">
-                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Guest" class="member-avatar" id="group-self-avatar">
-                    <div class="member-info">
-                        <span class="member-name" id="group-self-name">You (Guest)</span>
-                        <span class="member-role">Host</span>
+            <!-- Clean Member List (Only You) -->
+            <div class="party-members-grid">
+                <div class="party-member admin-glow">
+                    <div class="party-member-left">
+                        <span class="member-name admin-text" id="group-self-name">You (Guest)</span>
                     </div>
-                    <div class="member-voice-indicator" id="self-mic-indicator" style="display: none;">
-                        <i class="fa-solid fa-microphone"></i>
-                    </div>
+                    <i class="fa-solid fa-microphone speaking-mic" id="self-mic-indicator"></i>
                 </div>
             </div>
+
+            <div class="party-divider"></div>
 
             <!-- In-Room Chat Stream -->
-            <div class="room-chat-wrapper">
-                <div class="chat-messages-container" id="chat-messages-container"></div>
-                <div class="chat-input-bar">
+            <div class="party-chat-container">
+                <div class="chat-messages" id="chat-messages-container"></div>
+                <div class="chat-input-box">
                     <input type="text" id="chat-input" placeholder="Type a message..." maxlength="120">
-                    <button id="chat-send-btn"><i class="fa-solid fa-paper-plane"></i></button>
+                    <button class="send-msg-btn" id="chat-send-btn"><i class="fa-solid fa-paper-plane"></i></button>
                 </div>
             </div>
-        </section>
+        </aside>
 
-        <!-- CENTER: Content Showcase -->
-        <section class="center-content-area" id="center-content">
+        <!-- CENTER HUB -->
+        <section class="center-hub">
             <!-- HOME TAB -->
-            <div class="tab-pane active" id="pane-home">
-                <div class="hero-feature-banner" id="hero-banner">
-                    <div class="hero-details">
-                        <div class="badge-tag"><i class="fa-solid fa-users"></i> 2 - 8 Players</div>
-                        <h1 class="hero-game-title" id="hero-title">Dot Domination</h1>
-                        <p class="hero-game-desc" id="hero-desc">Draw lines, Claim boxes, Win! Conquer the grid in real-time.</p>
-                        <div class="hero-cta-group">
-                            <button class="btn-play-large" id="btn-hero-play"><i class="fa-solid fa-play"></i> Play</button>
+            <div id="pane-home" style="display: flex; flex-direction: column; gap: 20px;">
+                <div class="hero-banner">
+                    <div class="shooting-star"></div>
+                    <div class="shooting-star"></div>
+                    <div class="shooting-star"></div>
+                    <div class="hero-content">
+                        <h1 id="hero-title">Dot Domination</h1>
+                        <div class="hero-subtitle">
+                            <span><i class="fa-solid fa-users"></i> 2 - 8 Players</span>
+                            <span id="hero-desc">Draw lines, Claim boxes, Win! Conquer the grid in high-speed multiplayer action.</span>
                         </div>
+                        <button class="play-now-btn" id="btn-hero-play"><i class="fa-solid fa-play"></i> Play</button>
                     </div>
-                    <div class="hero-media-wrap">
-                        <div class="hero-media-glow"></div>
-                        <img src="DotDom.png" alt="Dot Domination Poster" class="hero-img-banner" id="hero-banner-img">
-                    </div>
+                    <img src="DotDom.png" alt="Hero Poster" id="hero-banner-img">
                 </div>
 
-                <div class="games-shelf-section">
-                    <h2 class="shelf-heading">Games</h2>
+                <div class="games-section">
+                    <div class="games-section-header">
+                        <h2>Games</h2>
+                    </div>
                     <div class="games-grid">
-                        <div class="game-item-card active-card" onclick="selectGameBanner('Dot Domination')">
-                            <img src="DotDom.png" alt="Dot Dom">
-                            <div class="card-meta">
-                                <h4>Dot Domination</h4>
-                                <span><i class="fa-solid fa-users"></i> 2 - 8 Players</span>
-                            </div>
+                        <div class="game-card active-card" onclick="selectGameBanner('Dot Domination')">
+                            <div class="card-thumb"><img src="DotDom.png" alt="Dot Dom"></div>
+                            <h3>Dot Domination</h3>
+                            <div class="game-card-meta"><span><i class="fa-solid fa-users"></i> 2-8 Players</span></div>
                         </div>
-                        <div class="game-item-card" onclick="selectGameBanner('Quiz Arena')">
-                            <img src="Quiz.png" alt="Quiz Arena">
-                            <div class="card-meta">
-                                <h4>Quiz Arena</h4>
-                                <span><i class="fa-solid fa-users"></i> 2 - 8 Players</span>
-                            </div>
+                        <div class="game-card" onclick="selectGameBanner('Quiz Arena')">
+                            <div class="card-thumb"><img src="Quiz.png" alt="Quiz Arena"></div>
+                            <h3>Quiz Arena</h3>
+                            <div class="game-card-meta"><span><i class="fa-solid fa-users"></i> 2-8 Players</span></div>
                         </div>
-                        <div class="game-item-card" onclick="selectGameBanner('Tic Tac Toe')">
-                            <img src="TicTac.png" alt="Tic Tac Toe">
-                            <div class="card-meta">
-                                <h4>Tic Tac Toe</h4>
-                                <span><i class="fa-solid fa-user"></i> 2 Players</span>
-                            </div>
+                        <div class="game-card" onclick="selectGameBanner('Tic Tac Toe')">
+                            <div class="card-thumb"><img src="TicTac.png" alt="Tic Tac Toe"></div>
+                            <h3>Tic Tac Toe</h3>
+                            <div class="game-card-meta"><span><i class="fa-solid fa-user"></i> 2 Players</span></div>
                         </div>
-                        <div class="game-item-card" onclick="selectGameBanner('Snake Battle')">
-                            <img src="snake.png" alt="Snake Battle">
-                            <div class="card-meta">
-                                <h4>Snake Battle</h4>
-                                <span><i class="fa-solid fa-users"></i> 2 - 4 Players</span>
-                            </div>
+                        <div class="game-card" onclick="selectGameBanner('Snake Battle')">
+                            <div class="card-thumb"><img src="snake.png" alt="Snake Battle"></div>
+                            <h3>Snake Battle</h3>
+                            <div class="game-card-meta"><span><i class="fa-solid fa-users"></i> 2-4 Players</span></div>
                         </div>
-                        <div class="game-item-card" onclick="selectGameBanner('Rock Paper Scissors')">
-                            <img src="RockPaper.png" alt="Rock Paper Scissors">
-                            <div class="card-meta">
-                                <h4>Rock Paper Scissors</h4>
-                                <span><i class="fa-solid fa-user"></i> 2 Players</span>
-                            </div>
+                        <div class="game-card" onclick="selectGameBanner('Rock Paper Scissors')">
+                            <div class="card-thumb"><img src="RockPaper.png" alt="Rock Paper"></div>
+                            <h3>Rock Paper Scissors</h3>
+                            <div class="game-card-meta"><span><i class="fa-solid fa-user"></i> 2 Players</span></div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- FRIENDS TAB -->
-            <div class="tab-pane" id="pane-friends" style="display: none;">
-                <div class="friends-layout">
-                    <div class="friends-sidebar">
-                        <div class="friends-subtabs">
-                            <button class="subtab-btn active" id="subtab-all" onclick="switchFriendsSubtab('all')">Friends</button>
-                            <button class="subtab-btn" id="subtab-pending" onclick="switchFriendsSubtab('pending')">Requests</button>
-                            <button class="subtab-btn" id="subtab-blocked" onclick="switchFriendsSubtab('blocked')">Blocked</button>
-                            <button class="subtab-btn" id="subtab-add" onclick="switchFriendsSubtab('add')">Add Friend</button>
-                        </div>
-                        <div class="friends-list-container" id="friends-list-container"></div>
+            <div id="pane-friends" style="display: none; height: 100%;">
+                <div class="friends-tab-layout">
+                    <div class="friends-list-panel">
+                        <div class="friends-list-header">Friends</div>
+                        <ul class="friends-hub-list" id="friends-hub-list">
+                            <li style="padding: 15px 5px; text-align: center; color: var(--text-muted); font-size: 0.8rem;">No friends yet</li>
+                        </ul>
                     </div>
-                    <div class="friends-chat-view" id="friends-chat-view">
-                        <!-- Action header hidden until a friend is selected -->
+
+                    <div class="friends-chat-window">
                         <div class="friends-chat-header" id="friends-chat-header" style="display: none;">
-                            <div class="active-friend-info">
-                                <img src="" id="chat-friend-avatar" class="mini-avatar">
-                                <span id="chat-friend-name">Select Friend</span>
+                            <div class="friends-chat-header-left">
+                                <span style="font-weight: 700; color: white;" id="chat-friend-name">Select Friend</span>
                             </div>
-                            <div class="friend-action-btns">
-                                <button class="btn-action-small danger" onclick="unfriendCurrentTarget()"><i class="fa-solid fa-user-minus"></i> Unfriend</button>
-                                <button class="btn-action-small warning" onclick="blockCurrentTarget()"><i class="fa-solid fa-ban"></i> Block</button>
-                            </div>
-                        </div>
-                        <div class="friends-chat-messages" id="friends-chat-messages">
-                            <div class="chat-placeholder-state" id="friends-chat-placeholder" style="display: flex; height: 100%; align-items: center; justify-content: center; color: var(--text-muted);">
-                                Select a friend from the left list to chat.
+                            <div class="friends-chat-actions">
+                                <button class="action-chip unfried" onclick="unfriendCurrentTarget()"><i class="fa-solid fa-user-minus"></i> Unfriend</button>
+                                <button class="action-chip block" onclick="blockCurrentTarget()"><i class="fa-solid fa-ban"></i> Block</button>
                             </div>
                         </div>
-                        <div class="friends-chat-input-bar" id="friends-chat-input-bar" style="display: none;">
+                        <div class="friends-chat-messages-body" id="friends-chat-messages">
+                            <div style="margin: auto; color: var(--text-muted); font-size: 0.85rem;">Select a friend to start chatting.</div>
+                        </div>
+                        <div class="friends-chat-footer" id="friends-chat-footer" style="display: none;">
                             <input type="text" id="friend-direct-input" placeholder="Type a message...">
-                            <button id="friend-send-direct-btn"><i class="fa-solid fa-paper-plane"></i></button>
+                            <button class="send-msg-btn" id="friend-send-direct-btn"><i class="fa-solid fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="friends-right-column">
+                        <div class="friends-panel-box">
+                            <h3>Add Friend</h3>
+                            <div id="add-friend-wrapper">
+                                <div class="search-friend-input-row">
+                                    <input type="text" id="friend-search-input" placeholder="Search username...">
+                                    <button class="find-btn" onclick="searchUserAction()"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                </div>
+                                <div id="search-results-box" style="margin-top: 8px;"></div>
+                            </div>
+                        </div>
+                        <div class="friends-panel-box">
+                            <h3>Requests</h3>
+                            <div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; padding: 6px;">No requests</div>
+                        </div>
+                        <div class="friends-panel-box">
+                            <h3>Blocked</h3>
+                            <div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; padding: 6px;">No blocked players</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- LEADERBOARD TAB -->
-            <div class="tab-pane" id="pane-leaderboard" style="display: none;">
-                <div class="leaderboard-container">
-                    <h2>Global Leaderboard</h2>
-                    <div class="leaderboard-table-wrap">
-                        <table class="leaderboard-table">
-                            <thead>
-                                <tr>
-                                    <th>Rank</th>
-                                    <th>Player</th>
-                                    <th>Game</th>
-                                    <th>Score</th>
-                                </tr>
-                            </thead>
-                            <tbody id="leaderboard-tbody">
-                                <tr>
-                                    <td>#1</td>
-                                    <td>ShadowStrike</td>
-                                    <td>Dot Domination</td>
-                                    <td>14,250</td>
-                                </tr>
-                                <tr>
-                                    <td>#2</td>
-                                    <td>VortexRunner</td>
-                                    <td>Snake Battle</td>
-                                    <td>11,920</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+            <div id="pane-leaderboard" style="display: none;">
+                <div style="background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px;">
+                    <h2 style="color: var(--neon-blue); margin-bottom: 12px; font-size: 1.1rem;">Leaderboard</h2>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">Rankings will appear here after matches.</p>
                 </div>
             </div>
 
-            <!-- GAME FRAME / PLAY AREA CONTAINER -->
-            <div id="active-game-overlay" style="display: none;">
-                <div class="game-overlay-header">
-                    <button class="btn-action-small" id="btn-close-game"><i class="fa-solid fa-arrow-left"></i> Exit Game</button>
-                    <span id="active-game-title">Game Title</span>
+            <!-- ACTIVE GAME VIEWPORT -->
+            <div id="active-game-overlay" style="display: none; position: absolute; inset: 0; background: var(--bg-dark); z-index: 50; flex-direction: column; padding: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">
+                    <button class="action-chip unfried" id="btn-close-game"><i class="fa-solid fa-arrow-left"></i> Exit Game</button>
+                    <span id="active-game-title" style="color: white; font-weight: 700;">Game</span>
+                    <div style="width: 60px;"></div>
                 </div>
-                <div id="game-mount-point" class="game-viewport"></div>
+                <div id="game-mount-point" style="flex: 1; display: flex; align-items: center; justify-content: center;"></div>
             </div>
         </section>
     </main>
 
-    <!-- Custom Script -->
     <script src="script.js"></script>
 </body>
 </html>

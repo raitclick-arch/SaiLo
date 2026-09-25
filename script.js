@@ -1,3 +1,10 @@
+// Supabase Configuration
+const SUPABASE_URL = "https://yhzwkewubrllgmezxpcr.supabase.co"; // आपकी स्क्रीन पर दिख रहा URL[span_3](start_span)[span_3](end_span)
+const SUPABASE_ANON_KEY = "sb_publishable_sXOS0sc3hoddprV518CkSA_ksknzBqK"; // यहाँ अपनी कॉपी की गई anon key पेस्ट करें
+
+// Initialize Supabase Client
+const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
 document.addEventListener("DOMContentLoaded", () => {
     let audioCtx = null;
     let musicInterval = null;
